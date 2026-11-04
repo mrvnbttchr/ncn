@@ -150,6 +150,12 @@ strong { font-weight: 700; color: var(--ink); }
 .legal h2 { font-size: 1.3rem; margin: 36px 0 10px; }
 .legal p, .legal li { color: #33434a; }
 .legal p + p { margin-top: .8em; }
+.legal h3 { font-size: 1rem; margin: 20px 0 6px; }
+.legal ul { margin: .6em 0 .8em; padding-left: 1.4em; }
+.legal li + li { margin-top: .2em; }
+.legal a { color: var(--primary); text-decoration: none; word-break: break-word; }
+.legal a:hover { text-decoration: underline; }
+.legal p.legal__date { margin-top: 40px; color: var(--muted); font-size: .9rem; }
 .todo { background: #fff4d6; padding: 1px 6px; border-radius: 4px; font-weight: 700; color: #7a5600; }
 
 /* Responsive */
