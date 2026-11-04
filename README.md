@@ -1,6 +1,6 @@
-# NCN – North Consulting Network
+# NCN – Northern Consulting Network
 
-Statische Website des North Consulting Network (Netzwerk studentischer Unternehmensberatungen in Norddeutschland).
+Statische Website des Northern Consulting Network (Netzwerk studentischer Unternehmensberatungen in Norddeutschland).
 
 - `index.html` – One-Pager (Über uns, Mitglieder, Vorteile, Organisation, Treffen, Events, Kontakt)
 - `impressum.html`, `datenschutz.html` – Rechtstexte (Platzhalter `[...]` vor Go-live ausfüllen)

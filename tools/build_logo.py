@@ -49,7 +49,7 @@ def fmt(pts):
 def svg(color=GREEN, size=800):
     cx, cy, r = CIRCLE
     polys = "\n      ".join(f'<polygon points="{fmt(p)}" fill="#000"/>' for p in SHAPES)
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="55 60 690 690" width="{size}" height="{size}" role="img" aria-label="NCN – North Consulting Network">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="55 60 690 690" width="{size}" height="{size}" role="img" aria-label="NCN – Northern Consulting Network">
   <defs>
     <mask id="ncn-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="800">
       <rect width="800" height="800" fill="#fff"/>

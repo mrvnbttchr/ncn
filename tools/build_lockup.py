@@ -1,8 +1,8 @@
-"""Baut das NCN-Logo mit Schriftzug „North Consulting Network“ als SVG.
+"""Baut das NCN-Logo mit Schriftzug „Northern Consulting Network“ als SVG.
 
 Der Text wird mit Open Sans (tools/fonts, OFL-Lizenz) in Vektorpfade umgewandelt,
 das fertige SVG braucht also keine Schrift. Proportionen wie im Original-Logo:
-Kreisdurchmesser D, Textbreite 2,675·D, Abstand Kreis→Versalhöhe 0,179·D.
+Kreisdurchmesser D, Versalhöhe 0,152·D, Abstand Kreis→Versalhöhe 0,179·D.
 
 Aufruf: python3 tools/build_lockup.py [gewicht]   (aus dem NCN-Ordner, Standard 360)
 """
@@ -18,13 +18,13 @@ import build_logo as L
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT.parent / "assets" / "logo"
 FONT = ROOT / "fonts" / "OpenSans[wdth,wght].ttf"
-TEXT = "North Consulting Network"
+TEXT = "Northern Consulting Network"
 TEXT_COLOR = "#000000"
 TRACKING = 41             # Buchstabenabstand in Font-Einheiten (≈ 0,02 em, wie Original)
 WEIGHT = 360              # zwischen Light (300) und Regular (400), wie Original
 
 D = 674.0                 # Kreisdurchmesser im Icon-Koordinatenraum (2·r)
-TEXT_W = 2.675 * D        # Breite des Schriftzugs
+CAP_H = 0.1523 * D        # Versalhöhe des Schriftzugs (wie Original: 23 px bei 151 px Kreis)
 GAP = 0.179 * D           # Abstand Kreisunterkante → Oberkante Versalien
 PAD = 0.06 * D            # Rand rundum
 
@@ -94,11 +94,13 @@ def text_path(weight):
 def lockup_svg(weight=WEIGHT, icon_color=L.GREEN, text_color=TEXT_COLOR):
     cx, cy, r = L.CIRCLE
     parts, xmin, xmax, cap, upm = text_path(weight)
-    s = TEXT_W / (xmax - xmin)                     # Font-Einheiten → Icon-Einheiten
+    s = CAP_H / cap                                # Font-Einheiten → Icon-Einheiten
+    TEXT_W = (xmax - xmin) * s
     baseline = cy + r + GAP + cap * s
     tx = cx - TEXT_W / 2 - xmin * s
     descent = 0.25 * upm * s                       # Platz für das g
-    left, right = cx - TEXT_W / 2 - PAD, cx + TEXT_W / 2 + PAD
+    half = max(TEXT_W / 2, r)
+    left, right = cx - half - PAD, cx + half + PAD
     top, bottom = cy - r - PAD, baseline + descent + PAD
     w, h = right - left, bottom - top
 
@@ -106,7 +108,7 @@ def lockup_svg(weight=WEIGHT, icon_color=L.GREEN, text_color=TEXT_COLOR):
         f'<path transform="translate({x:.0f} 0)" d="{d}"/>' for x, d in parts
     )
     polys = "\n      ".join(f'<polygon points="{L.fmt(p)}" fill="#000"/>' for p in L.SHAPES)
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{left:.1f} {top:.1f} {w:.1f} {h:.1f}" width="{w:.0f}" height="{h:.0f}" role="img" aria-label="NCN – North Consulting Network">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{left:.1f} {top:.1f} {w:.1f} {h:.1f}" width="{w:.0f}" height="{h:.0f}" role="img" aria-label="NCN – Northern Consulting Network">
   <defs>
     <mask id="ncn-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="800">
       <rect width="800" height="800" fill="#fff"/>
