@@ -1,0 +1,90 @@
+"""Baut das NCN-Leuchtturm-Logo als SVG und hochaufgelöste PNGs.
+
+Geometrie im 800x800-Raster, symmetrisch um x=400, abgemessen am Original-Icon.
+Aufruf: python3 tools/build_logo.py   (aus dem NCN-Ordner)
+"""
+from pathlib import Path
+from PIL import Image, ImageDraw
+
+GREEN = "#1EA273"
+OUT = Path(__file__).resolve().parent.parent / "assets" / "logo"
+AX = 400  # Symmetrieachse
+
+CIRCLE = (400, 402, 337)  # cx, cy, r
+
+def mirror(pts):
+    return [(2 * AX - x, y) for x, y in pts]
+
+# Lichtkegel links (transparent): zwei Geraden, die sich in der Laterne treffen
+def beam_left():
+    a = lambda x: 212 + 0.23 * (x - 186.5)     # Oberkante
+    b = lambda x: 268 - 0.172 * (x - 325.5)    # Unterkante
+    apex_x = 385.0
+    return [(-50, a(-50)), (apex_x, a(apex_x)), (-50, b(-50))]
+
+# Leuchtturm (transparent), Hälften als (y, halbe Breite) von oben nach unten
+def tower():
+    left = [
+        (151, 21),     # Dach oben
+        (188, 44.5),   # Dachschräge
+        (199, 44.5),
+        (199, 58.5),   # Galerie
+        (209, 58.5),
+        (209, 44.5),   # Hals / Laterne
+        (311, 44.5),
+        (311, 61.5),   # Turmschaft (verjüngt)
+        (581.5, 85),
+        (581.5, 195),  # Bodenplatte
+        (593.5, 195),
+    ]
+    pts_left = [(AX - w, y) for y, w in left]
+    pts_right = [(AX + w, y) for y, w in reversed(left)]
+    return pts_left + pts_right
+
+SHAPES = [beam_left(), mirror(beam_left()), tower()]
+
+def fmt(pts):
+    return " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+
+def svg(color=GREEN, size=800):
+    cx, cy, r = CIRCLE
+    polys = "\n      ".join(f'<polygon points="{fmt(p)}" fill="#000"/>' for p in SHAPES)
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="55 60 690 690" width="{size}" height="{size}" role="img" aria-label="NCN – North Consulting Network">
+  <defs>
+    <mask id="ncn-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="800">
+      <rect width="800" height="800" fill="#fff"/>
+      {polys}
+    </mask>
+  </defs>
+  <circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}" mask="url(#ncn-cut)"/>
+</svg>
+'''
+
+def png(px, color=GREEN, bg=None):
+    """Rendert mit 4x-Supersampling; Ausschnitt wie die SVG-viewBox."""
+    ss = 4
+    S = px * ss
+    scale = S / 690
+    tx = lambda p: ((p[0] - 55) * scale, (p[1] - 60) * scale)
+    shape = Image.new("L", (S, S), 0)
+    d = ImageDraw.Draw(shape)
+    cx, cy, r = CIRCLE
+    (x0, y0), (x1, y1) = tx((cx - r, cy - r)), tx((cx + r, cy + r))
+    d.ellipse([x0, y0, x1, y1], fill=255)
+    for p in SHAPES:
+        d.polygon([tx(q) for q in p], fill=0)
+    shape = shape.resize((px, px), Image.LANCZOS)
+    img = Image.new("RGBA", (px, px), bg or (0, 0, 0, 0))
+    fill = Image.new("RGBA", (px, px), color)
+    img.paste(fill, (0, 0), shape)
+    return img
+
+if __name__ == "__main__":
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "ncn-logo.svg").write_text(svg())
+    (OUT / "ncn-logo-weiss.svg").write_text(svg("#FFFFFF"))
+    for px in (512, 1024, 2048, 4096):
+        png(px).save(OUT / f"ncn-logo-{px}.png", optimize=True)
+    png(4096, "#FFFFFF").save(OUT / "ncn-logo-weiss-4096.png", optimize=True)
+    png(1024, bg=(255, 255, 255, 255)).save(OUT / "ncn-logo-1024-weisser-hintergrund.png", optimize=True)
+    print("fertig:", sorted(p.name for p in OUT.iterdir()))

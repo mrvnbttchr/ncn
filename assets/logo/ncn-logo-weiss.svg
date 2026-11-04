@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="55 60 690 690" width="800" height="800" role="img" aria-label="NCN – North Consulting Network">
+  <defs>
+    <mask id="ncn-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="800">
+      <rect width="800" height="800" fill="#fff"/>
+      <polygon points="-50.0,157.6 385.0,257.7 -50.0,332.6" fill="#000"/>
+      <polygon points="850.0,157.6 415.0,257.7 850.0,332.6" fill="#000"/>
+      <polygon points="379.0,151.0 355.5,188.0 355.5,199.0 341.5,199.0 341.5,209.0 355.5,209.0 355.5,311.0 338.5,311.0 315.0,581.5 205.0,581.5 205.0,593.5 595.0,593.5 595.0,581.5 485.0,581.5 461.5,311.0 444.5,311.0 444.5,209.0 458.5,209.0 458.5,199.0 444.5,199.0 444.5,188.0 421.0,151.0" fill="#000"/>
+    </mask>
+  </defs>
+  <circle cx="400" cy="402" r="337" fill="#FFFFFF" mask="url(#ncn-cut)"/>
+</svg>
