@@ -2,6 +2,8 @@
 
 Statische Website des Northern Consulting Network (Netzwerk studentischer Unternehmensberatungen in Norddeutschland).
 
+Zur Vorschau: https://mrvnbttchr.github.io/ncn/
+
 - `index.html` – One-Pager (Über uns, Mitglieder, Vorteile, Organisation, Treffen, Events, Kontakt)
 - `impressum.html`, `datenschutz.html` – Rechtstexte (Platzhalter `[...]` vor Go-live ausfüllen)
 - `styles.css`, `main.js`, `assets/`
