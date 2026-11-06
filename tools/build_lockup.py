@@ -107,15 +107,8 @@ def lockup_svg(weight=WEIGHT, icon_color=L.GREEN, text_color=TEXT_COLOR):
     glyphs = "\n    ".join(
         f'<path transform="translate({x:.0f} 0)" d="{d}"/>' for x, d in parts
     )
-    polys = "\n      ".join(f'<polygon points="{L.fmt(p)}" fill="#000"/>' for p in L.SHAPES)
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{left:.1f} {top:.1f} {w:.1f} {h:.1f}" width="{w:.0f}" height="{h:.0f}" role="img" aria-label="NCN – Northern Consulting Network">
-  <defs>
-    <mask id="ncn-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="800">
-      <rect width="800" height="800" fill="#fff"/>
-      {polys}
-    </mask>
-  </defs>
-  <circle cx="{cx}" cy="{cy}" r="{r}" fill="{icon_color}" mask="url(#ncn-cut)"/>
+  <path fill="{icon_color}" d="{L.icon_path()}"/>
   <g fill="{text_color}" transform="translate({tx:.2f} {baseline:.2f}) scale({s:.6f} {-s:.6f})">
     {glyphs}
   </g>

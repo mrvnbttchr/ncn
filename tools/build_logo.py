@@ -46,17 +46,58 @@ SHAPES = [beam_left(), mirror(beam_left()), tower()]
 def fmt(pts):
     return " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
 
-def svg(color=GREEN, size=800):
+def _circle_hits(slope, x0, y0):
+    """Schnittpunkte der Geraden y = y0 + slope·(x − x0) mit dem Kreis (links, rechts)."""
     cx, cy, r = CIRCLE
-    polys = "\n      ".join(f'<polygon points="{fmt(p)}" fill="#000"/>' for p in SHAPES)
+    # y = m·x + c
+    m, c = slope, y0 - slope * x0
+    A = 1 + m * m
+    B = 2 * (m * (c - cy) - cx)
+    C = cx * cx + (c - cy) ** 2 - r * r
+    D = (B * B - 4 * A * C) ** 0.5
+    xs = sorted([(-B - D) / (2 * A), (-B + D) / (2 * A)])
+    return [(x, m * x + c) for x in xs]
+
+
+def icon_path():
+    """Logo als reiner Pfad ohne Maske (zwei grüne Flächen: über und unter den Lichtkegeln).
+
+    Masken werden von mobilen Browsern (v. a. Safari) teils niedrig aufgelöst gerastert
+    und wirken dann unscharf – ein einfacher Pfad bleibt in jeder Größe gestochen scharf.
+    """
+    cx, cy, r = CIRCLE
+    wall = AX - 44.5                                   # Außenwand der Laterne (links)
+    a_l = _circle_hits(0.23, 186.5, 212)[0]            # Oberkante Lichtkegel trifft Kreis
+    b_l = _circle_hits(-0.172, 325.5, 268)[0]          # Unterkante Lichtkegel trifft Kreis
+    a_y = 212 + 0.23 * (wall - 186.5)                  # Oberkante trifft Laterne
+    b_y = 268 - 0.172 * (wall - 325.5)                 # Unterkante trifft Laterne
+    m = lambda p: (2 * AX - p[0], p[1])
+    t = tower()
+    n = len(t) // 2
+    left = t[:n]                                       # linke Turmseite, oben -> unten
+    right = t[n:]                                      # rechte Turmseite, unten -> oben
+    neck = [p for p in left if p[0] == wall and 209 <= p[1] <= 311]
+    i_top = left.index(neck[0])                        # (wall, 209)
+    i_bot = left.index(neck[1])                        # (wall, 311)
+    f = lambda p: f"{p[0]:.2f},{p[1]:.2f}"
+
+    # Obere Fläche: Bogen über den Kopf, rechter Kegel rein, Turmspitze, linker Kegel raus
+    upper = [f"M{f(a_l)}", f"A{r},{r} 0 0 1 {f(m(a_l))}", f"L{f((2*AX-wall, a_y))}"]
+    upper += [f"L{f(m(p))}" for p in reversed(left[:i_top + 1])]
+    upper += [f"L{f(p)}" for p in left[:i_top + 1]]
+    upper += [f"L{f((wall, a_y))}", "Z"]
+
+    # Untere Fläche: Bogen unten herum, linker Kegel rein, Turmschaft + Sockel, rechter Kegel raus
+    lower = [f"M{f(m(b_l))}", f"A{r},{r} 0 1 1 {f(b_l)}", f"L{f((wall, b_y))}"]
+    lower += [f"L{f(p)}" for p in left[i_bot:]]
+    lower += [f"L{f(p)}" for p in right[:n - i_bot]]
+    lower += [f"L{f((2*AX-wall, b_y))}", "Z"]
+    return " ".join(upper) + " " + " ".join(lower)
+
+
+def svg(color=GREEN, size=800):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="55 60 690 690" width="{size}" height="{size}" role="img" aria-label="NCN – Northern Consulting Network">
-  <defs>
-    <mask id="ncn-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="800">
-      <rect width="800" height="800" fill="#fff"/>
-      {polys}
-    </mask>
-  </defs>
-  <circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}" mask="url(#ncn-cut)"/>
+  <path fill="{color}" d="{icon_path()}"/>
 </svg>
 '''
 
