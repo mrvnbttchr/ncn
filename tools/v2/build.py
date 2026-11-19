@@ -79,7 +79,7 @@ for i, (n, la, lo, je, logo, h, url, pos) in enumerate(REG, 1):
     small = V / f"assets/logos/{logo}-360.webp"
     srcset = f' srcset="assets/logos/{logo}-360.webp 360w, {src} {w0}w" sizes="150px"' if small.exists() else ""
     rows.append(f'''          <li><a href="{url}" target="_blank" rel="noopener" data-city="{slug(n)}">
-            <span class="no">{i:02d}</span><span class="name">{je}</span><span class="city">{n}</span><span class="geo">{dms(la,"N")} {dms(lo,"E")}</span>
+            <span class="name">{je}</span><span class="city">{n}</span>
             <span class="logo"><img src="{src}"{srcset} style="--h:{h}" width="{round(h*w0/h0)}" height="{h}" alt="Logo {html.unescape(je)}" loading="lazy"></span></a></li>''')
 REGISTER = "\n".join(rows)
 

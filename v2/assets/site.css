@@ -176,12 +176,10 @@ ol, ul { padding: 0; list-style: none; }
 /* Mitglieder als Register */
 .register { margin-top: clamp(64px, 8vw, 120px); border-top: 1.5px solid var(--ink); }
 .register li { border-bottom: 1px solid var(--line); }
-.register a { display: grid; grid-template-columns: 56px minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 150px; align-items: center; gap: 24px; min-height: 92px; padding: 10px 0; text-decoration: none; transition: background-color .25s, padding .35s var(--ease); }
+.register a { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 150px; align-items: center; gap: 24px; min-height: 92px; padding: 10px 0; text-decoration: none; transition: background-color .25s, padding .35s var(--ease); }
 .register a:hover, .register a.is-on { background: rgba(30, 162, 115, .07); padding-inline: 16px; }
-.register .no { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
 .register .name { font-family: var(--display); font-weight: 600; font-stretch: 88%; font-size: clamp(19px, 1.7vw, 25px); letter-spacing: -.015em; line-height: 1.15; }
 .register .city { font-weight: 500; }
-.register .geo { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
 .register .logo { justify-self: end; height: 56px; width: 150px; display: flex; align-items: center; justify-content: flex-end; }
 .register .logo img { height: calc(var(--h) * .9px); width: auto; max-width: 150px; object-fit: contain; mix-blend-mode: multiply; }
 .register .arrow { display: none; }
@@ -251,7 +249,8 @@ ol, ul { padding: 0; list-style: none; }
 .foot__links { display: flex; flex-wrap: wrap; gap: 4px 8px; }
 .foot__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; color: var(--on-night-soft); text-decoration: none; font-size: 15px; }
 .foot__links a:hover { color: var(--on-night); }
-.wordmark { font-family: var(--display); font-weight: 700; font-stretch: 75%; letter-spacing: -.05em; line-height: .78; font-size: clamp(56px, 11.4vw, 210px); color: transparent; -webkit-text-stroke: 1px rgba(238, 245, 240, .22); white-space: nowrap; padding: 8px 0 0; user-select: none; overflow: hidden; }
+.wordmark-wrap { container-type: inline-size; }
+.wordmark { font-family: var(--display); font-weight: 700; font-stretch: 75%; letter-spacing: -.05em; line-height: .78; font-size: 11vw; font-size: 12.2cqi; font-variation-settings: "opsz" 96; color: transparent; -webkit-text-stroke: 1px rgba(238, 245, 240, .22); white-space: nowrap; padding: 8px 0 0; user-select: none; overflow: hidden; }
 
 /* Rechtstexte */
 .legal { padding: 150px 0 120px; }
@@ -267,8 +266,7 @@ ol, ul { padding: 0; list-style: none; }
 
 /* ------------------------------------------------------------ Responsive */
 @media (max-width: 1100px) {
-  .register a { grid-template-columns: 44px minmax(0, 1.6fr) minmax(0, 1fr) 130px; }
-  .register .geo { display: none; }
+  .register a { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) 130px; }
   .register .logo { width: 130px; }
 }
 @media (max-width: 960px) {
@@ -301,12 +299,11 @@ ol, ul { padding: 0; list-style: none; }
   .chart .city text.sub { display: none; }
   .chart .grat-label { font-size: 16px; }
   .chart .sea { font-size: 22px; }
-  .register a { grid-template-columns: 32px minmax(0, 1fr) 96px; gap: 14px; min-height: 84px; }
+  .register a { grid-template-columns: minmax(0, 1fr) 96px; gap: 14px; min-height: 84px; }
   .register a:hover, .register a.is-on { padding-inline: 8px; }
-  .register .city { grid-column: 2; grid-row: 2; font-size: 14px; color: var(--ink-soft); margin-top: -6px; }
-  .register .name { grid-column: 2; grid-row: 1; font-size: 18px; }
-  .register .no { grid-row: span 2; }
-  .register .logo { grid-column: 3; grid-row: 1 / span 2; width: 96px; height: 44px; }
+  .register .city { grid-column: 1; grid-row: 2; font-size: 14px; color: var(--ink-soft); margin-top: -6px; }
+  .register .name { grid-column: 1; grid-row: 1; font-size: 18px; }
+  .register .logo { grid-column: 2; grid-row: 1 / span 2; width: 96px; height: 44px; }
   .register .logo img { height: calc(var(--h) * .62px); max-width: 96px; }
   .gain { grid-template-columns: minmax(0, 1fr); padding: 28px 0 36px; }
   .gain__no { grid-row: auto; font-size: 56px; margin-bottom: 14px; }
@@ -316,7 +313,8 @@ ol, ul { padding: 0; list-style: none; }
   .wheel__center img { width: 48px; height: 48px; }
   .wheel__host { font-size: 22px; }
   .people { grid-template-columns: minmax(0, 1fr); }
-  .wordmark { font-size: 16.5vw; }
+  .wordmark { font-size: 29vw; font-size: 33cqi; line-height: .84; white-space: normal; padding-top: 16px; }
+  .wordmark span { display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
