@@ -1,16 +1,23 @@
-"""Gleicht die Mitglieder-Logos optisch an.
+"""Gleicht die Mitglieder-Logos optisch an und erzeugt die WebP-Dateien für die Website.
+
+Die PNGs in assets/logos sind die Quelldateien, eingebunden werden die WebP-Versionen.
 
 1. Schneidet leere Ränder (transparent oder weiß) aus assets/logos/*.png weg.
-2. Berechnet für jedes Logo eine Höhe, sodass alle etwa dieselbe Fläche haben
+2. Erzeugt <name>.webp, wenn sie fehlt oder das PNG gerade zugeschnitten wurde
+   (mit --force alle neu). Bestehende WebPs bleiben sonst unverändert.
+3. Berechnet für jedes Logo eine Höhe, sodass alle etwa dieselbe Fläche haben
    (breite Logos werden flacher, quadratische höher), begrenzt durch MAX_W/MAX_H.
-3. Schreibt die Höhe als style="--h:…" an das <img> in index.html.
+4. Setzt im <img> in index.html src="…webp?v=<hash>" und style="--h:…".
+   Der Hash ändert sich mit der WebP-Datei, damit Browser keine alte Version zeigen.
 
-Aufruf (aus dem NCN-Ordner): python3 tools/normalize_logos.py
-Neue Logos einfach nach assets/logos legen, im HTML einbinden und das Skript erneut ausführen.
+Aufruf (aus dem NCN-Ordner): python3 tools/normalize_logos.py [--force]
+Neues Logo: PNG nach assets/logos legen, im HTML einbinden
+(<img src="assets/logos/name.png" …>), Skript ausführen.
 """
 import hashlib
 import math
 import re
+import sys
 from pathlib import Path
 from PIL import Image
 
@@ -22,6 +29,7 @@ AREA = 6000      # Ziel-Fläche in px² (Desktop)
 MAX_W = 180      # Höchstbreite in px
 MAX_H = 64       # Höchsthöhe in px
 PAD = 2          # Rand, der nach dem Zuschneiden stehen bleibt
+WEBP = dict(quality=90, method=6)   # verlustbehaftet, Transparenz bleibt erhalten
 
 
 def content_box(im):
@@ -47,22 +55,38 @@ def height_for(ratio):
     return round(h)
 
 
-def main():
+def save_webp(im, path):
+    has_alpha = im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info)
+    im.convert("RGBA" if has_alpha else "RGB").save(path, "WEBP", **WEBP)
+
+
+def main(force=False):
     html = HTML.read_text()
     for f in sorted(LOGOS.glob("*.png")):
         im = Image.open(f)
         box = content_box(im)
-        if box != (0, 0, *im.size):
+        trimmed = box != (0, 0, *im.size)
+        if trimmed:
             im.crop(box).save(f, optimize=True)
             im = Image.open(f)
+
+        webp = f.with_suffix(".webp")
+        if force or trimmed or not webp.exists():
+            save_webp(im, webp)
+            note = "WebP neu"
+        else:
+            note = "WebP unverändert"
+
         w, h = im.size
         hpx = height_for(w / h)
-        v = hashlib.md5(f.read_bytes()).hexdigest()[:8]   # Cache-Busting: neue Datei -> neue URL
-        pat = re.compile(r'<img src="assets/logos/' + re.escape(f.name) + r'(?:\?v=\w+)?"(?: style="--h:\d+")?')
-        html, n = pat.subn(f'<img src="assets/logos/{f.name}?v={v}" style="--h:{hpx}"', html)
-        print(f"{f.name:22} {w}x{h}  ratio {w/h:.2f}  ->  {round(hpx*w/h)}x{hpx}px  ({n}x im HTML)")
+        v = hashlib.md5(webp.read_bytes()).hexdigest()[:8]
+        pat = re.compile(r'<img src="assets/logos/' + re.escape(f.stem)
+                         + r'\.(?:png|webp)(?:\?v=\w+)?"(?: style="--h:\d+")?')
+        html, n = pat.subn(f'<img src="assets/logos/{webp.name}?v={v}" style="--h:{hpx}"', html)
+        warn = "" if n else "  ⚠ nicht im HTML gefunden"
+        print(f"{f.name:22} {w}x{h}  -> {round(hpx * w / h)}x{hpx}px  {note}{warn}")
     HTML.write_text(html)
 
 
 if __name__ == "__main__":
-    main()
+    main(force="--force" in sys.argv)
